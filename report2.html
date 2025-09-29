@@ -87,41 +87,54 @@ document.addEventListener('DOMContentLoaded', () => {
   setupTable('machineOutputStatus');
 
   window.saveReport = ()=>{
-    const data = {};
-    ['accumulatedStatus','machineOutputStatus'].forEach(id=>{
-      const table = document.getElementById(id);
-      data[id] = Array.from(table.querySelectorAll('tbody tr')).map(r=>Array.from(r.querySelectorAll('input')).map(i=>i.value));
+  const data = {};
+  ['accumulatedStatus','machineOutputStatus'].forEach(id=>{
+    const table = document.getElementById(id);
+    data[id] = Array.from(table.querySelectorAll('tbody tr')).map(r=>{
+      const tds = Array.from(r.querySelectorAll('td'));
+      // first two columns = text, rest = input values
+      return [
+        tds[0].innerText, // S.No
+        tds[1].innerText, // Description
+        ...tds.slice(2).map(td=> {
+          const inp = td.querySelector('input');
+          return inp ? inp.value : td.innerText;
+        })
+      ];
     });
-    localStorage.setItem('dailyReport', JSON.stringify(data));
-    alert('Report saved!');
+  });
+  localStorage.setItem('dailyReport', JSON.stringify(data));
+  alert('Report saved!');
+}
+
+window.printReport = ()=>{
+  const data = JSON.parse(localStorage.getItem('dailyReport')||'{}');
+  if(!data.accumulatedStatus && !data.machineOutputStatus){ alert('No report saved!'); return; }
+  let html = '<h1>Daily Production and Dispatch Report</h1>';
+
+  if(data.accumulatedStatus){
+    html += '<h2>Accumulated Status</h2><table border="1" style="border-collapse:collapse; width:100%">';
+    html += '<tr><th>SO NO</th><th>Description</th><th>SPRING A</th><th>SPRING B</th><th>COIR A</th><th>COIR B</th><th>Total</th></tr>';
+    data.accumulatedStatus.forEach(row=> html += '<tr>'+row.map(c=>`<td>${c}</td>`).join('')+'</tr>');
+    html += '</table>';
   }
 
-  window.printReport = ()=>{
-    const data = JSON.parse(localStorage.getItem('dailyReport')||'{}');
-    if(!data.accumulatedStatus && !data.machineOutputStatus){ alert('No report saved!'); return; }
-    let html = '<h1>Daily Production and Dispatch Report</h1>';
-
-    if(data.accumulatedStatus){
-      html += '<h2>Accumulated Status</h2><table border="1" style="border-collapse:collapse; width:100%">';
-      html += '<tr><th>SO NO</th><th>Description</th><th>SPRING A</th><th>SPRING B</th><th>COIR A</th><th>COIR B</th><th>Total</th></tr>';
-      data.accumulatedStatus.forEach(row=> html += '<tr>'+row.map(c=>`<td>${c}</td>`).join('')+'</tr>');
-      html += '</table>';
-    }
-
-    if(data.machineOutputStatus){
-      html += '<h2>Machine Output Status</h2><table border="1" style="border-collapse:collapse; width:100%">';
-      html += '<tr><th>SO NO</th><th>Description</th><th>SPRING A</th><th>SPRING B</th><th>COIR A</th><th>COIR B</th><th>Total</th></tr>';
-      data.machineOutputStatus.forEach(row=> html += '<tr>'+row.map(c=>`<td>${c}</td>`).join('')+'</tr>');
-      html += '</table>';
-    }
-
-    const win = window.open('','_blank');
-    win.document.write(html);
-    win.document.close();
-    win.print();
+  if(data.machineOutputStatus){
+    html += '<h2>Machine Output Status</h2><table border="1" style="border-collapse:collapse; width:100%">';
+    html += '<tr><th>SO NO</th><th>Description</th><th>SPRING A</th><th>SPRING B</th><th>COIR A</th><th>COIR B</th><th>Total</th></tr>';
+    data.machineOutputStatus.forEach(row=> html += '<tr>'+row.map(c=>`<td>${c}</td>`).join('')+'</tr>');
+    html += '</table>';
   }
+
+  const win = window.open('','_blank');
+  win.document.write(html);
+  win.document.close();
+  win.print();
+}
+
 });
 </script>
 
 </body>
 </html>
+
