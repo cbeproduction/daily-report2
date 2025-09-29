@@ -42,31 +42,31 @@
         <tr>
             <td>1</td>
             <td>TOTAL PRODUCTION</td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" readonly></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number" readonly></td>
         </tr>
         <tr>
             <td>2</td>
             <td>PRODUCTION</td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" readonly></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number" readonly></td>
         </tr>
         <tr>
             <td>3</td>
             <td>TAPE EDGE PRODUCTION</td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" readonly></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number" readonly></td>
         </tr>
-        <!-- Add remaining rows in same format -->
+        <!-- Add more rows as needed -->
     </tbody>
 </table>
 
@@ -74,29 +74,26 @@
 <button onclick="printReport()">Print Report</button>
 
 <script>
-function updateTotal(input) {
-    const row = input.closest('tr');
-    const inputs = row.querySelectorAll('td input');
-    let total = 0;
-    // Sum SPRING A/B and COIR A/B (columns 2,3,4,5)
-    for (let i = 2; i <= 5; i++) {
-        total += Number(inputs[i].value) || 0;
-    }
-    inputs[6].value = total; // Set TOTAL column
-}
+// Add event listeners to all input fields in SPRING/COIR columns
+document.querySelectorAll('#accumulatedStatus tbody tr').forEach(row => {
+    const inputs = row.querySelectorAll('td input:not([readonly])');
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            let total = 0;
+            inputs.forEach(inp => total += Number(inp.value) || 0);
+            row.querySelector('td input[readonly]').value = total;
+        });
+    });
+});
 
 function saveReport() {
     const table = document.getElementById('accumulatedStatus');
     const data = [];
-    for (let i = 1; i < table.rows.length; i++) {
-        const row = table.rows[i];
+    table.querySelectorAll('tbody tr').forEach(row => {
         const rowData = [];
-        row.querySelectorAll('td').forEach(cell => {
-            const input = cell.querySelector('input');
-            rowData.push(input ? input.value : cell.innerText);
-        });
+        row.querySelectorAll('td input').forEach(input => rowData.push(input.value));
         data.push(rowData);
-    }
+    });
     localStorage.setItem('accumulatedStatus', JSON.stringify(data));
     alert('Report saved!');
 }
@@ -106,9 +103,7 @@ function printReport() {
     if (!savedData.length) { alert("No report saved!"); return; }
 
     let html = '<h2>Accumulated Status</h2><table border="1" style="border-collapse:collapse;"><tr><th>SO NO</th><th>Description</th><th>SPRING A</th><th>SPRING B</th><th>COIR A</th><th>COIR B</th><th>Total</th></tr>';
-    savedData.forEach(row => {
-        html += '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>';
-    });
+    savedData.forEach(row => html += '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>');
     html += '</table>';
 
     const win = window.open('', '', 'width=900,height=600');
@@ -120,4 +115,3 @@ function printReport() {
 
 </body>
 </html>
-
