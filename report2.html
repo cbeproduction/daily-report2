@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Production and Dispatch Report</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f6f8; }
+    h1, h2 { text-align: center; }
+    table { border-collapse: collapse; width: 100%; margin-bottom: 20px; background-color: white; }
+    th, td { border: 1px solid #ccc; padding: 5px; text-align: center; }
+    th { background-color: #2a9df4; color: white; }
+    input { width: 80px; text-align: right; padding: 3px; }
+    button { padding: 10px 15px; margin: 10px 5px; font-size: 16px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<h1>Daily Production and Dispatch Report</h1>
+
+<h2>Accumulated Status</h2>
+<table id="accumulatedStatus">
+    <thead>
+        <tr>
+            <th>SO NO</th>
+            <th>Description</th>
+            <th colspan="2">SPRING</th>
+            <th colspan="2">COIR</th>
+            <th>Total</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th>A</th>
+            <th>B</th>
+            <th>A</th>
+            <th>B</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>1</td>
+            <td>TOTAL PRODUCTION</td>
+            <td><input type="number" value="4071"></td>
+            <td><input type="number" value=""></td>
+            <td><input type="number" value="2768"></td>
+            <td><input type="number" value=""></td>
+            <td><input type="number" value="6839"></td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>PRODUCTION</td>
+            <td><input type="number" value="162"></td>
+            <td><input type="number" value="85"></td>
+            <td><input type="number" value="62"></td>
+            <td><input type="number" value="56"></td>
+            <td><input type="number" value="365"></td>
+        </tr>
+        <tr>
+            <td>3</td>
+            <td>TAPE EDGE PRODUCTION</td>
+            <td><input type="number" value="139"></td>
+            <td><input type="number" value="85"></td>
+            <td><input type="number" value="70"></td>
+            <td><input type="number" value="45"></td>
+            <td><input type="number" value="339"></td>
+        </tr>
+        <!-- Add remaining rows similarly -->
+    </tbody>
+</table>
+
+<button onclick="saveReport()">Save Report</button>
+<button onclick="printReport()">Print Report</button>
+
+<script>
+function saveReport() {
+    const table = document.getElementById('accumulatedStatus');
+    const data = [];
+    for (let i = 1; i < table.rows.length; i++) {
+        const row = table.rows[i];
+        const rowData = [];
+        for (let j = 0; j < row.cells.length; j++) {
+            const cell = row.cells[j];
+            const input = cell.querySelector('input');
+            rowData.push(input ? input.value : cell.innerText);
+        }
+        data.push(rowData);
+    }
+    localStorage.setItem('accumulatedStatus', JSON.stringify(data));
+    alert('Report saved!');
+}
+
+function printReport() {
+    const savedData = JSON.parse(localStorage.getItem('accumulatedStatus')) || [];
+    if (!savedData.length) { alert("No report saved!"); return; }
+
+    let html = '<h2>Accumulated Status</h2><table border="1" style="border-collapse:collapse;"><tr><th>SO NO</th><th>Description</th><th>SPRING A</th><th>SPRING B</th><th>COIR A</th><th>COIR B</th><th>Total</th></tr>';
+    savedData.forEach(row => {
+        html += '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>';
+    });
+    html += '</table>';
+
+    const win = window.open('', '', 'width=900,height=600');
+    win.document.write(html);
+    win.document.close();
+    win.print();
+}
+</script>
+
+</body>
+</html>
