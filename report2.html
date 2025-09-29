@@ -170,19 +170,30 @@ function saveReport() {
 }
 
 function printReport() {
-  const savedData = JSON.parse(localStorage.getItem('accumulatedStatus')) || [];
-  if (!savedData.length) { alert('No report saved!'); return; }
+  const dataAccum = JSON.parse(localStorage.getItem('accumulatedStatus')) || [];
 
-  let html = '<h2>Accumulated Status</h2><table border="1" style="border-collapse:collapse;"><tr><th>SO NO</th><th>Description</th><th>SPRING A</th><th>SPRING B</th><th>COIR A</th><th>COIR B</th><th>Total</th></tr>';
-  savedData.forEach(row => html += '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>');
-  html += '</table>';
+  if (!dataAccum.length) { alert("No report saved!"); return; }
 
-  const win = window.open('', '', 'width=900,height=600');
+  let html = '<h1>Daily Production and Dispatch Report</h1>';
+
+  if(dataAccum.length){
+    html += '<h2>Accumulated Status</h2>';
+    html += '<table border="1" style="border-collapse:collapse; width:100%;">';
+    html += '<tr><th>SO NO</th><th>Description</th><th>SPRING A</th><th>SPRING B</th><th>COIR A</th><th>COIR B</th><th>Total</th></tr>';
+    dataAccum.forEach(row => {
+      html += '<tr>' + row.map(cell => `<td>${cell}</td>`).join('') + '</tr>';
+    });
+    html += '</table>';
+  }
+
+  const win = window.open('', '', 'width=1000,height=800');
   win.document.write(html);
   win.document.close();
   win.print();
 }
+
 </script>
 
 </body>
 </html>
+
