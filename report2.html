@@ -55,7 +55,7 @@ button { padding: 10px 15px; margin: 10px 5px; font-size: 16px; cursor: pointer;
   </tbody>
 </table>
 
-<h2>shipmentStatus</h2>
+<h2>ShipmentStatus</h2>
 <table id="Shipment Status">
   <thead>
     <tr><th>SO NO</th><th>Description</th><th colspan="2">SPRING</th><th colspan="2">COIR</th><th>Total</th></tr>
@@ -146,7 +146,7 @@ window.printReport = ()=>{
   }
 
   if(data.shipmentStatus){
-    html += '<h2>shipmentStatus</h2><table border="1" style="border-collapse:collapse; width:100%">';
+    html += '<h2>ShipmentStatus</h2><table border="1" style="border-collapse:collapse; width:100%">';
     html += '<tr><th>SO NO</th><th>Description</th><th>SPRING A</th><th>SPRING B</th><th>COIR A</th><th>COIR B</th><th>Total</th></tr>';
     data.shipmentStatus.forEach(row=> html += '<tr>'+row.map(c=>`<td>${c}</td>`).join('')+'</tr>');
     html += '</table>';
@@ -164,5 +164,3 @@ window.printReport = ()=>{
 
 </body>
 </html>
-
-
