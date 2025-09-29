@@ -22,10 +22,7 @@ button { padding: 10px 15px; margin: 10px 5px; font-size: 16px; cursor: pointer;
 <table id="accumulatedStatus">
 <thead>
 <tr>
-<th>SO NO</th><th>Description</th><th colspan="2">SPRING</th><th colspan="2">COIR</th><th>Total</th>
-</tr>
-<tr>
-<th></th><th></th><th>A</th><th>B</th><th>A</th><th>B</th><th></th>
+<th>SO NO</th><th>Description</th><th>A</th><th>B</th><th>A</th><th>B</th><th>Total</th>
 </tr>
 </thead>
 <tbody>
@@ -45,10 +42,7 @@ button { padding: 10px 15px; margin: 10px 5px; font-size: 16px; cursor: pointer;
 <table id="machineOutputStatus">
 <thead>
 <tr>
-<th>SO NO</th><th>Description</th><th colspan="2">SPRING</th><th colspan="2">COIR</th><th>Total</th>
-</tr>
-<tr>
-<th></th><th></th><th>A</th><th>B</th><th>A</th><th>B</th><th></th>
+<th>SO NO</th><th>Description</th><th>A</th><th>B</th><th>A</th><th>B</th><th>Total</th>
 </tr>
 </thead>
 <tbody>
@@ -64,34 +58,37 @@ button { padding: 10px 15px; margin: 10px 5px; font-size: 16px; cursor: pointer;
 </table>
 
 <script>
-// Attach listeners and auto-total for any table
-function setupTable(tableId) {
-    const table = document.getElementById(tableId);
+document.addEventListener('DOMContentLoaded', () => {
+  const tables = ['accumulatedStatus','machineOutputStatus'];
+  
+  tables.forEach(id => {
+    const table = document.getElementById(id);
     table.querySelectorAll('tbody tr').forEach(row => {
-        const inputs = Array.from(row.querySelectorAll('td input'));
-        const editable = inputs.slice(0, 4); // first 4 editable
-        const total = inputs[6]; // last column readonly
+      const inputs = Array.from(row.querySelectorAll('input'));
+      const editable = inputs.slice(0,4);
+      const total = inputs[6];
 
-        const recalc = () => total.value = editable.reduce((sum, i) => sum + (Number(i.value)||0), 0);
+      const recalc = () => {
+        total.value = editable.reduce((sum,i)=>sum + (Number(i.value)||0),0);
+      };
 
-        editable.forEach(inp => {
-            inp.addEventListener('input', recalc);
-            inp.addEventListener('keydown', e => {
-                if(e.key === 'Enter'){
-                    e.preventDefault();
-                    const allInputs = Array.from(document.querySelectorAll('input:not([readonly])'));
-                    const idx = allInputs.indexOf(inp);
-                    const next = allInputs[idx+1] || allInputs[0];
-                    next.focus();
-                    next.select?.();
-                }
-            });
+      editable.forEach(inp => {
+        inp.addEventListener('input', recalc);
+        inp.addEventListener('keydown', e => {
+          if(e.key==='Enter'){
+            e.preventDefault();
+            const allInputs = Array.from(document.querySelectorAll('input:not([readonly])'));
+            const idx = allInputs.indexOf(e.target);
+            const next = allInputs[idx+1] || allInputs[0];
+            next.focus();
+            next.select?.();
+          }
         });
-        recalc();
+      });
+      recalc();
     });
-}
-
-// Initialize both tables
-setupTable('accumulatedStatus');
-setupTable('machineOutputStatus');
+  });
+});
 </script>
+</body>
+</html>
