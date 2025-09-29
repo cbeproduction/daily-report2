@@ -57,20 +57,20 @@ button { padding: 10px 15px; margin: 10px 5px; font-size: 16px; cursor: pointer;
 </tbody>
 </table>
 
+<button onclick="saveReport()">Save Report</button>
+<button onclick="printReport()">Print Report</button>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  const tables = ['accumulatedStatus','machineOutputStatus'];
-  
-  tables.forEach(id => {
-    const table = document.getElementById(id);
+
+  function setupTable(tableId) {
+    const table = document.getElementById(tableId);
     table.querySelectorAll('tbody tr').forEach(row => {
       const inputs = Array.from(row.querySelectorAll('input'));
-      const editable = inputs.slice(0,4);
-      const total = inputs[6];
+      const editable = inputs.slice(0,4); // first 4 inputs editable
+      const total = inputs[6]; // last readonly column
 
-      const recalc = () => {
-        total.value = editable.reduce((sum,i)=>sum + (Number(i.value)||0),0);
-      };
+      const recalc = () => total.value = editable.reduce((sum,i)=>sum + (Number(i.value)||0),0);
 
       editable.forEach(inp => {
         inp.addEventListener('input', recalc);
@@ -78,16 +78,60 @@ document.addEventListener('DOMContentLoaded', () => {
           if(e.key==='Enter'){
             e.preventDefault();
             const allInputs = Array.from(document.querySelectorAll('input:not([readonly])'));
-            const idx = allInputs.indexOf(e.target);
+            const idx = allInputs.indexOf(inp);
             const next = allInputs[idx+1] || allInputs[0];
             next.focus();
             next.select?.();
           }
         });
       });
-      recalc();
+      recalc(); // initialize total
     });
-  });
+  }
+
+  setupTable('accumulatedStatus');
+  setupTable('machineOutputStatus');
+
+  // Save Report
+  window.saveReport = () => {
+    const data = {};
+    ['accumulatedStatus','machineOutputStatus'].forEach(id=>{
+      const table = document.getElementById(id);
+      const rows = [];
+      table.querySelectorAll('tbody tr').forEach(row=>{
+        rows.push(Array.from(row.querySelectorAll('input')).map(i=>i.value));
+      });
+      data[id] = rows;
+    });
+    localStorage.setItem('dailyReport', JSON.stringify(data));
+    alert('Report saved!');
+  };
+
+  // Print Report
+  window.printReport = () => {
+    const data = JSON.parse(localStorage.getItem('dailyReport')||'{}');
+    let html = '<h1>Daily Production and Dispatch Report</h1>';
+    ['accumulatedStatus','machineOutputStatus'].forEach(id=>{
+      if(!data[id]) return;
+      html += '<h2>'+(id==='accumulatedStatus'?'Accumulated Status':'Machine Output Status')+'</h2>';
+      html += '<table border="1" style="border-collapse:collapse;width:100%">';
+      data[id].forEach((row,rowIdx)=>{
+        html += '<tr>';
+        row.forEach((cell,cellIdx)=>{
+          if(rowIdx===0 && cellIdx===0){
+            html += '<th>SO NO</th>';
+          }
+          html += '<td>'+cell+'</td>';
+        });
+        html += '</tr>';
+      });
+      html += '</table>';
+    });
+    const win = window.open('','_blank');
+    win.document.write(html);
+    win.document.close();
+    win.print();
+  };
 });
 </script>
 </body>
