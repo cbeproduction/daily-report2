@@ -77,16 +77,34 @@
 document.querySelectorAll('#accumulatedStatus tbody tr').forEach(row => {
     const inputs = row.querySelectorAll('td input');
     const editableInputs = Array.from(inputs).slice(0, 4); // first 4 are editable
-    const totalInput = inputs[4]; // the 5th is readonly total
+    const totalInput = inputs[4]; // last one is readonly total
 
+    // auto total calculation
     editableInputs.forEach(input => {
         input.addEventListener('input', () => {
             let total = 0;
             editableInputs.forEach(inp => total += Number(inp.value) || 0);
             totalInput.value = total;
         });
+
+        // Enter key navigation
+        input.addEventListener('keydown', (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault(); // stop form submit
+                moveToNextInput(input);
+            }
+        });
     });
 });
+
+// Function to move to next input
+function moveToNextInput(current) {
+    const allInputs = Array.from(document.querySelectorAll('#accumulatedStatus tbody input:not([readonly])'));
+    const idx = allInputs.indexOf(current);
+    if (idx >= 0 && idx < allInputs.length - 1) {
+        allInputs[idx + 1].focus();
+    }
+}
 
 function saveReport() {
     const table = document.getElementById('accumulatedStatus');
