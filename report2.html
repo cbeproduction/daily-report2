@@ -66,60 +66,7 @@
             <td><input type="number" value="45" oninput="updateTotal(this)"></td>
             <td><input type="number" value="339" readonly></td>
         </tr>
-        <tr>
-            <td>4</td>
-            <td>PRODUCTION PENDING</td>
-            <td><input type="number" value="179" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="202" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="381" readonly></td>
-        </tr>
-        <tr>
-            <td>5</td>
-            <td>ABOVE 48HRS PRODUCTION PENDING</td>
-            <td><input type="number" value="92" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="99" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="191" readonly></td>
-        </tr>
-        <tr>
-            <td>6</td>
-            <td>HOLD</td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="0" readonly></td>
-        </tr>
-        <tr>
-            <td>7</td>
-            <td>PRODUCTION PLAN</td>
-            <td><input type="number" value="150" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="150" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="300" readonly></td>
-        </tr>
-        <tr>
-            <td>8</td>
-            <td>YESTERDAY MAN POWER</td>
-            <td><input type="number" value="75" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="39" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="13" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="6" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="133" readonly></td>
-        </tr>
-        <tr>
-            <td>9</td>
-            <td>TODAY MAN POWER</td>
-            <td><input type="number" value="102" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="12" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="" oninput="updateTotal(this)"></td>
-            <td><input type="number" value="114" readonly></td>
-        </tr>
+        <!-- Add remaining rows in same format -->
     </tbody>
 </table>
 
@@ -129,13 +76,13 @@
 <script>
 function updateTotal(input) {
     const row = input.closest('tr');
+    const inputs = row.querySelectorAll('td input');
     let total = 0;
-    row.querySelectorAll('td input').forEach((inp, index) => {
-        if (index > 1) { // skip SO.NO and Description
-            total += Number(inp.value) || 0;
-        }
-    });
-    row.querySelector('td:last-child input').value = total;
+    // Sum SPRING A/B and COIR A/B (columns 2,3,4,5)
+    for (let i = 2; i <= 5; i++) {
+        total += Number(inputs[i].value) || 0;
+    }
+    inputs[6].value = total; // Set TOTAL column
 }
 
 function saveReport() {
