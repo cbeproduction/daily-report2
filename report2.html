@@ -137,7 +137,12 @@ window.printReport = ()=>{
   const data = JSON.parse(localStorage.getItem('dailyReport')||'{}');
   if(!data.accumulatedStatus && !data.machineOutputStatus && !data.shipmentStatus){ alert('No report saved!'); return; }
   let html = '<h1>Daily Production and Dispatch Report</h1>';
-  if(data.date) html += `<h3 style="text-align:center;">Date: ${data.date}</h3>`;
+  // Format date to DD/MM/YYYY
+  if (data.date) {
+    const [year, month, day] = data.date.split('-');
+    const formattedDate = `${day}/${month}/${year}`;
+    html += `<h3 style="text-align:center;">Date: ${formattedDate}</h3>`;
+  }
 
   if(data.accumulatedStatus){
     html += '<h2>Accumulated Status</h2><table border="1" style="border-collapse:collapse; width:100%">';
@@ -172,6 +177,7 @@ window.printReport = ()=>{
 
 </body>
 </html>
+
 
 
 
